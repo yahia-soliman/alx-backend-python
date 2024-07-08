@@ -9,4 +9,8 @@ wait_random = __import__("0-basic_async_syntax").wait_random
 
 async def wait_n(n: int, max_delay: int) -> typing.List[float]:
     """Wait for random time n times concurrentely"""
-    return await asyncio.gather(*[wait_random(max_delay) for _ in range(n)])
+    coros = [wait_random(max_delay) for _ in range(n)]
+    results = []
+    for coro in asyncio.as_completed(coros):
+        results.append(await coro);
+    return results
