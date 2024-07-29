@@ -26,3 +26,18 @@ class TestAccessNestedMap(unittest.TestCase):
         """this shouldn't be legal"""
         with self.assertRaises(KeyError):
             access_nested_map(nested_map, path)
+
+
+class TestGetJson(unittest.TestCase):
+    """test that utils.get_json returns the expected result"""
+
+    def test_get_json(self):
+        """We don’t want to make any actual external HTTP calls"""
+        pass
+
+
+class TestMemoize(unittest.TestCase):
+    """tests for utils.memoize decorator"""
+    def test_memoize(self):
+        """only called once using assert_called_once"""
+        pass
