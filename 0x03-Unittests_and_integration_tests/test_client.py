@@ -13,7 +13,7 @@ class TestGithubOrgClient(unittest.TestCase):
         ("google",),
         ("abc",)
         ])
-    def test_org(self):
+    def test_org(self, *_):
         """test case for different org"""
         pass
 
@@ -31,7 +31,7 @@ class TestGithubOrgClient(unittest.TestCase):
         ({"license": {"key": "my_license"}}, "my_license"),
         ({"license": {"key": "other_license"}}, "my_license"),
     ])
-    def test_has_license(self):
+    def test_has_license(self, *_):
         """Test that a repo has a license"""
         pass
 
