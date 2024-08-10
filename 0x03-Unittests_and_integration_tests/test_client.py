@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Testing utils for the client utils"""
 import unittest
-from unittest import mock
+from unittest.mock import patch, PropertyMock
 
 from parameterized import parameterized, parameterized_class
 
@@ -12,7 +12,7 @@ class TestGithubOrgClient(unittest.TestCase):
     """Test the functionality of the mentioned function"""
 
     @parameterized.expand(["google", "abc"])
-    @mock.patch("client.get_json")
+    @patch("client.get_json")
     def test_org(self, org, get_json):
         """test case for different org"""
         get_json.return_value = {}
@@ -23,22 +23,22 @@ class TestGithubOrgClient(unittest.TestCase):
     def test_public_repos_url(self):
         """testing with patching"""
         payload = {"repos_url": "hi"}
-        with mock.patch(
-            "client.GithubOrgClient.org", new_callable=mock.PropertyMock
+        with patch(
+            "client.GithubOrgClient.org", new_callable=PropertyMock
         ) as org:
             org.return_value = payload
             c = GithubOrgClient("org")
             self.assertEqual(c._public_repos_url, payload["repos_url"])
             org.assert_called_with()
 
-    @mock.patch("client.get_json")
+    @patch("client.get_json")
     def test_public_repos(self, get_json):
         """Test puplic github repos"""
         payload = [{"name": "repo name"}]
         get_json.return_value = payload
-        with mock.patch(
+        with patch(
             "client.GithubOrgClient._public_repos_url",
-            new_callable=mock.PropertyMock,
+            new_callable=PropertyMock,
         ) as mocked:
             c = GithubOrgClient("org")
             repos = c.public_repos()
