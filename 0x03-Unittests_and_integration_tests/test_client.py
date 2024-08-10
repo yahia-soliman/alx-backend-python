@@ -70,9 +70,9 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Setup the mocking before all tests"""
-        patcher = patch("requests.get")
-        cls.get_patcher = patcher
-        patching = patcher.start()
+        cls.get_patcher = patch("requests.get")
+        patching = cls.get_patcher.start()
+        patching.return_value.json.side_effect = TEST_PAYLOAD
         return super().setUpClass()
 
     @classmethod
