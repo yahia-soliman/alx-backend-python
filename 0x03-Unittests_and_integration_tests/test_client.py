@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Testing utils for the client utils"""
 import unittest
-from unittest.mock import PropertyMock, patch
+from unittest.mock import Mock, PropertyMock, patch
 
 from parameterized import parameterized, parameterized_class
 
@@ -70,9 +70,16 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         """Setup the mocking before all tests"""
+
+        def side_effect(url: str):
+            """side effect for the return of requests.get()"""
+            mock = Mock()
+            mock.json.return_value = TEST_PAYLOAD[0][int("/repos" in url)]
+            return mock
+
         cls.get_patcher = patch("requests.get")
         patching = cls.get_patcher.start()
-        patching.return_value.json.side_effect = TEST_PAYLOAD
+        patching.side_effect = side_effect
         return super().setUpClass()
 
     @classmethod
@@ -80,3 +87,14 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         """What happens after all tests in the class"""
         cls.get_patcher.stop()
         return super().tearDownClass()
+
+    def test_public_repos(self):
+        """Test puplic github repos"""
+        c = GithubOrgClient("google")
+        repos = c.public_repos()
+        self.assertEqual(repos, self.expected_repos)
+
+    def test_public_repos_with_license(self):
+        c = GithubOrgClient("google")
+        repos = c.public_repos(license="apache-2.0")
+        self.assertEqual(repos, self.apache2_repos)
