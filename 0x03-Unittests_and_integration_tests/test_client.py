@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 """Testing utils for the client utils"""
 import unittest
-from unittest.mock import patch, PropertyMock
+from unittest.mock import PropertyMock, patch
 
 from parameterized import parameterized, parameterized_class
 
 from client import GithubOrgClient
+from fixtures import TEST_PAYLOAD
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -24,7 +25,8 @@ class TestGithubOrgClient(unittest.TestCase):
         """testing with patching"""
         payload = {"repos_url": "hi"}
         with patch(
-            "client.GithubOrgClient.org", new_callable=PropertyMock
+            "client.GithubOrgClient.org",
+            new_callable=PropertyMock,
         ) as org:
             org.return_value = payload
             c = GithubOrgClient("org")
@@ -58,16 +60,23 @@ class TestGithubOrgClient(unittest.TestCase):
         self.assertEqual(c.has_license(repo, license), expected)
 
 
-@parameterized_class([])
+@parameterized_class(
+    ("org_payload", "repos_payload", "expected_repos", "apache2_repos"),
+    TEST_PAYLOAD,
+)
 class TestIntegrationGithubOrgClient(unittest.TestCase):
     """integration testing with fixtures"""
 
     @classmethod
     def setUpClass(cls) -> None:
-        """Setup the test cases"""
+        """Setup the mocking before all tests"""
+        patcher = patch("requests.get")
+        cls.get_patcher = patcher
+        patching = patcher.start()
         return super().setUpClass()
 
     @classmethod
     def tearDownClass(cls) -> None:
-        """What happens after the test"""
+        """What happens after all tests in the class"""
+        cls.get_patcher.stop()
         return super().tearDownClass()
